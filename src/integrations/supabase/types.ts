@@ -83,12 +83,113 @@ export type Database = {
           },
         ]
       }
+      seller_documents: {
+        Row: {
+          document_type: string
+          file_path: string
+          id: string
+          seller_id: string
+          uploaded_at: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          document_type: string
+          file_path: string
+          id?: string
+          seller_id: string
+          uploaded_at?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          document_type?: string
+          file_path?: string
+          id?: string
+          seller_id?: string
+          uploaded_at?: string | null
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_documents_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sellers: {
+        Row: {
+          account_holder_name: string | null
+          address: string | null
+          bank_account_number: string | null
+          bank_name: string | null
+          bio: string | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          id: string
+          ifsc_code: string | null
+          phone_number: string | null
+          pin_code: string | null
+          state: string | null
+          store_name: string
+          updated_at: string | null
+          user_id: string
+          verification_status: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          account_holder_name?: string | null
+          address?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          id?: string
+          ifsc_code?: string | null
+          phone_number?: string | null
+          pin_code?: string | null
+          state?: string | null
+          store_name: string
+          updated_at?: string | null
+          user_id: string
+          verification_status?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          account_holder_name?: string | null
+          address?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          id?: string
+          ifsc_code?: string | null
+          phone_number?: string | null
+          pin_code?: string | null
+          state?: string | null
+          store_name?: string
+          updated_at?: string | null
+          user_id?: string
+          verification_status?: string | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_seller: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

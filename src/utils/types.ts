@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -17,6 +16,37 @@ export interface Category {
   name: string;
   imageUrl: string;
   description: string;
+}
+
+// Seller related interfaces
+export interface Seller {
+  id: string;
+  user_id: string;
+  store_name: string;
+  bio?: string;
+  phone_number?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  pin_code?: string;
+  country: string;
+  bank_account_number?: string;
+  bank_name?: string;
+  ifsc_code?: string;
+  account_holder_name?: string;
+  verified: boolean;
+  verification_status: 'pending' | 'verified' | 'rejected';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SellerDocument {
+  id: string;
+  seller_id: string;
+  document_type: 'aadhar' | 'pan' | 'store_photo' | 'self_photo';
+  file_path: string;
+  verified: boolean;
+  uploaded_at: string;
 }
 
 export const MOCK_PRODUCTS: Product[] = [
