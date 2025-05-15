@@ -1,40 +1,14 @@
 
 import { Link } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 const Footer = () => {
   return (
-    <footer className="bg-jewelry-50 pt-12 pb-6">
+    <footer className="bg-jewelry-50 pt-8 pb-6">
       <div className="container mx-auto px-4">
-        {/* Newsletter */}
-        <div className="bg-white rounded-lg p-6 shadow-sm mb-12">
-          <div className="grid md:grid-cols-2 gap-6 items-center">
-            <div>
-              <h3 className="text-2xl font-serif font-semibold mb-2">
-                Join our newsletter
-              </h3>
-              <p className="text-muted-foreground">
-                Sign up to receive updates on new arrivals, special offers and artisan stories.
-              </p>
-            </div>
-            <div>
-              <form className="flex flex-col sm:flex-row gap-2">
-                <Input
-                  type="email"
-                  placeholder="Your email address"
-                  className="flex-1"
-                />
-                <Button type="submit">Subscribe</Button>
-              </form>
-            </div>
-          </div>
-        </div>
-        
         {/* Main Footer */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
-            <h4 className="font-serif text-lg font-medium mb-4">ArtisanGems</h4>
+            <h4 className="font-serif text-lg font-medium mb-4">Kala Connect</h4>
             <p className="text-muted-foreground text-sm mb-4">
               Connecting talented artisans with those who appreciate handcrafted jewelry and materials.
             </p>
@@ -100,7 +74,7 @@ const Footer = () => {
         <div className="pt-6 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} ArtisanGems. All rights reserved.
+              &copy; {new Date().getFullYear()} Kala Connect. All rights reserved.
             </p>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
               <img src="https://cdn-icons-png.flaticon.com/128/5968/5968299.png" alt="Visa" className="h-6" />
