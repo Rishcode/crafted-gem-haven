@@ -1,41 +1,54 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from "@/contexts/AuthContext";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "react-hook-form";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 
-const sellerSchema = z.object({
-  store_name: z.string().min(2, "Store name must be at least 2 characters"),
+const sellerFormSchema = z.object({
+  store_name: z.string()
+    .min(2, {
+      message: "Store name must be at least 2 characters.",
+    })
+    .max(50, {
+      message: "Store name must not be longer than 50 characters.",
+    }),
   bio: z.string().optional(),
-  phone_number: z.string().min(10, "Phone number must be at least 10 digits"),
-  address: z.string().min(5, "Address must be at least 5 characters"),
-  city: z.string().min(2, "City name must be at least 2 characters"),
-  state: z.string().min(2, "State name must be at least 2 characters"),
-  pin_code: z.string().min(5, "PIN code must be at least 5 characters"),
-  country: z.string().default("India"),
-  bank_account_number: z.string().min(8, "Bank account number must be at least 8 digits"),
-  bank_name: z.string().min(2, "Bank name must be at least 2 characters"),
-  ifsc_code: z.string().min(8, "IFSC code must be at least 8 characters"),
-  account_holder_name: z.string().min(2, "Account holder name must be at least 2 characters")
+  phone_number: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  pin_code: z.string().optional(),
+  account_holder_name: z.string().optional(),
+  bank_account_number: z.string().optional(),
+  bank_name: z.string().optional(),
+  ifsc_code: z.string().optional(),
 });
 
-type SellerFormValues = z.infer<typeof sellerSchema>;
+type SellerFormValues = z.infer<typeof sellerFormSchema>;
 
 const SellerRegistration = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const { user, isSeller } = useAuth();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SellerFormValues>({
-    resolver: zodResolver(sellerSchema),
+    resolver: zodResolver(sellerFormSchema),
     defaultValues: {
       store_name: "",
       bio: "",
@@ -44,264 +57,257 @@ const SellerRegistration = () => {
       city: "",
       state: "",
       pin_code: "",
-      country: "India",
+      account_holder_name: "",
       bank_account_number: "",
       bank_name: "",
       ifsc_code: "",
-      account_holder_name: ""
     },
   });
 
-  // Handle registration
   const onSubmit = async (values: SellerFormValues) => {
     if (!user) {
       toast({
-        variant: "destructive",
         title: "Authentication required",
-        description: "You must be logged in to register as a seller",
+        description: "Please sign in to register as a seller",
+        variant: "destructive",
       });
-      navigate("/auth");
       return;
     }
 
     setIsLoading(true);
     try {
-      // Fix: Pass a single object instead of an array
+      // Fix: Pass a single object and ensure store_name is required
       const { data, error } = await supabase
         .from('sellers')
         .insert({
           ...values,
+          store_name: values.store_name, // Ensure this is required
           user_id: user.id 
         })
         .select()
         .single();
 
       if (error) throw error;
-      
+
       toast({
-        title: "Registration successful",
-        description: "Your seller account is pending verification. Please complete the document upload process.",
+        title: "Registration successful!",
+        description: "Your seller account has been created. Please complete verification.",
       });
-      
-      // Redirect to document upload page with the new seller ID
+
+      // Redirect to verification page
       navigate(`/seller/verification/${data.id}`);
     } catch (error: any) {
+      console.error("Error registering seller:", error);
       toast({
         variant: "destructive",
         title: "Registration failed",
-        description: error.message || "An error occurred during registration",
+        description: error.message,
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // If user is not logged in, redirect to auth
-  if (!user) {
-    navigate("/auth");
-    return null;
-  }
-
-  // If user is already a seller, redirect to verification
-  if (isSeller) {
-    navigate("/seller/dashboard");
-    return null;
-  }
-
   return (
-    <div className="container py-12">
-      <Card className="w-full max-w-3xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl">Seller Registration</CardTitle>
-          <CardDescription>
-            Please provide your business details to register as a seller on Kalaconect
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Business Information</h3>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="store_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Store Name*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your Store Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone_number"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your contact number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-serif font-semibold mb-2">Become a Seller on Kala Connect</h1>
+          <p className="text-muted-foreground">
+            Join our community of skilled artisans and start selling your handcrafted goods.
+          </p>
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <h2 className="text-xl font-medium">Store Information</h2>
+              
+              <FormField
+                control={form.control}
+                name="store_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Store Name *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your store name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>About Your Store</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Tell us about your store and the items you create" 
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="phone_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your contact number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="space-y-4">
+              <h2 className="text-xl font-medium">Address</h2>
+              
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Street Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Street address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input placeholder="City" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
                 <FormField
                   control={form.control}
-                  name="bio"
+                  name="state"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Business Description</FormLabel>
+                      <FormLabel>State</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder="Tell us about your business and the products you create" 
-                          {...field} 
-                          className="min-h-[100px]"
-                        />
+                        <Input placeholder="State" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        This will be displayed on your seller profile
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Address Information</h3>
+              
+              <FormField
+                control={form.control}
+                name="pin_code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>PIN Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="PIN code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="space-y-4">
+              <h2 className="text-xl font-medium">Bank Details</h2>
+              <p className="text-sm text-muted-foreground">
+                This information will be used for payments. We'll verify these details during the approval process.
+              </p>
+              
+              <FormField
+                control={form.control}
+                name="account_holder_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account Holder Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Name as on bank account" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="bank_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bank Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Bank name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="address"
+                  name="bank_account_number"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Street Address*</FormLabel>
+                      <FormLabel>Account Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="Your street address" {...field} />
+                        <Input placeholder="Account number" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 
-                <div className="grid gap-4 md:grid-cols-3">
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="City" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="state"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>State*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="State" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="pin_code"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>PIN Code*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="PIN Code" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="ifsc_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>IFSC Code</FormLabel>
+                      <FormControl>
+                        <Input placeholder="IFSC code" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Bank Information</h3>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="bank_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Bank Name*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Bank Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="account_holder_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Account Holder Name*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Account Holder Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="bank_account_number"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Bank Account Number*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Bank Account Number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="ifsc_code"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>IFSC Code*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="IFSC Code" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <CardFooter className="flex justify-between px-0">
-                <Button variant="outline" onClick={() => navigate("/")}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Submitting..." : "Register as a Seller"}
-                </Button>
-              </CardFooter>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+            </div>
+            
+            <div className="pt-4">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Registering..." : "Register as Seller"}
+              </Button>
+              <p className="text-sm text-muted-foreground text-center mt-4">
+                After submission, you'll need to complete verification by uploading required documents.
+              </p>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import SearchBar from "./SearchBar";
+import { UserDropdown } from "./ui/user-dropdown";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -62,13 +63,16 @@ const Navbar = () => {
                 <SheetClose asChild>
                   <Link to="/category/materials" className="px-4 py-2 hover:bg-secondary rounded-md">Materials</Link>
                 </SheetClose>
+                <SheetClose asChild>
+                  <Link to="/sellers" className="px-4 py-2 hover:bg-secondary rounded-md">Artisan Stores</Link>
+                </SheetClose>
               </nav>
             </SheetContent>
           </Sheet>
 
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <h1 className="text-xl md:text-2xl font-serif font-bold">ArtisanGems</h1>
+            <h1 className="text-xl md:text-2xl font-serif font-bold">Kala Connect</h1>
           </Link>
 
           {/* Desktop Navigation */}
@@ -104,10 +108,10 @@ const Navbar = () => {
               Rings
             </Link>
             <Link 
-              to="/category/materials" 
+              to="/sellers" 
               className="text-sm font-medium hover:text-primary hover:underline underline-offset-4"
             >
-              Materials
+              Artisan Stores
             </Link>
           </nav>
 
@@ -132,12 +136,7 @@ const Navbar = () => {
                 <span className="sr-only">Cart</span>
               </Button>
             </Link>
-            <Link to="/account">
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-                <span className="sr-only">Account</span>
-              </Button>
-            </Link>
+            <UserDropdown />
           </div>
         </div>
       </div>

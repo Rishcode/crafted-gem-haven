@@ -14,6 +14,8 @@ import Auth from "./pages/Auth";
 import SellerRegistration from "./pages/SellerRegistration";
 import SellerVerification from "./pages/SellerVerification";
 import SellerDashboard from "./pages/SellerDashboard";
+import Sellers from "./pages/Sellers";
+import SellerProfile from "./pages/SellerProfile";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -35,6 +37,8 @@ const App = () => (
             <Route path="/seller/register" element={<SellerRegistration />} />
             <Route path="/seller/verification/:sellerId" element={<SellerVerification />} />
             <Route path="/seller/dashboard" element={<SellerDashboard />} />
+            <Route path="/sellers" element={<Sellers />} />
+            <Route path="/seller/:sellerId" element={<SellerProfile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
