@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -35,7 +36,7 @@ export interface Seller {
   ifsc_code?: string;
   account_holder_name?: string;
   verified: boolean;
-  verification_status: 'pending' | 'verified' | 'rejected';
+  verification_status: string; // Changed from string literal union to string
   created_at: string;
   updated_at: string;
 }

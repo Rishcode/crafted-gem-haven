@@ -40,7 +40,8 @@ const SellerDashboard = () => {
 
       if (error) throw error;
       
-      setSeller(data);
+      // Use type assertion to ensure Typescript knows we're handling the correct type
+      setSeller(data as unknown as Seller);
     } catch (error: any) {
       console.error("Error fetching seller data:", error);
       toast({

@@ -76,8 +76,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error('Error fetching seller profile:', error);
       }
 
-      setSeller(data);
-      setIsSeller(!!data);
+      if (data) {
+        // Use type assertion to ensure Typescript knows we're handling the correct type
+        setSeller(data as unknown as Seller);
+        setIsSeller(true);
+      } else {
+        setSeller(null);
+        setIsSeller(false);
+      }
+      
       setIsSellerChecked(true);
     } catch (error) {
       console.error('Error in fetchSellerProfile:', error);

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -67,14 +66,13 @@ const SellerRegistration = () => {
 
     setIsLoading(true);
     try {
+      // Fix: Pass a single object instead of an array
       const { data, error } = await supabase
         .from('sellers')
-        .insert([
-          { 
-            ...values,
-            user_id: user.id 
-          }
-        ])
+        .insert({
+          ...values,
+          user_id: user.id 
+        })
         .select()
         .single();
 
