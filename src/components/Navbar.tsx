@@ -2,7 +2,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { SearchBar } from "./SearchBar";
+import SearchBar from "./SearchBar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu } from "lucide-react";
 import {
@@ -11,11 +11,12 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { UserButton } from "@/components/ui/user-dropdown";
 import Cart from "./Cart";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const Navbar = () => {
-  const { user, isSeller } = useAuth();
+  const { user, isSeller, signOut } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
@@ -30,6 +31,65 @@ const Navbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // UserButton component inline
+  const UserButton = () => {
+    const userEmail = user?.email || "";
+    const initials = userEmail
+      .split("@")[0]
+      .substring(0, 2)
+      .toUpperCase();
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Avatar className="h-9 w-9">
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">{userEmail}</p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          
+          {isSeller && (
+            <DropdownMenuItem asChild>
+              <Link to="/seller/dashboard" className="flex items-center cursor-pointer">
+                <span>Seller Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
+          
+          {!isSeller && (
+            <DropdownMenuItem asChild>
+              <Link to="/seller/register" className="flex items-center cursor-pointer">
+                <span>Become a Seller</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
+          
+          <DropdownMenuItem asChild>
+            <Link to="/profile" className="flex items-center cursor-pointer">
+              <span>Profile</span>
+            </Link>
+          </DropdownMenuItem>
+          
+          <DropdownMenuSeparator />
+          <DropdownMenuItem 
+            className="flex items-center cursor-pointer"
+            onClick={() => signOut()}
+          >
+            <span>Sign Out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
 
   return (
     <header
