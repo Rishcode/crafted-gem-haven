@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { 
   ChevronDown,
   Filter,
@@ -18,29 +18,75 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const CategoryProducts = () => {
   const { category } = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get('q') || "";
+
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [priceRange, setPriceRange] = useState([0, 100]);
+  const [priceRange, setPriceRange] = useState([0, 10000]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+  const [selectedArtisans, setSelectedArtisans] = useState<string[]>([]);
+  const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
+  const [sortOption, setSortOption] = useState<string>("featured");
   
-  // Get products for this category
-  const products = MOCK_PRODUCTS.filter(
-    p => p.category === category || !category
-  );
+  // Get all products
+  const allProducts = MOCK_PRODUCTS;
   
-  // Filter products based on filters
-  const filteredProducts = products.filter(product => {
+  // Extract unique artisans for the filter
+  const artisans = Array.from(new Set(allProducts.map(product => product.artisan)));
+  
+  // Materials for filtering (common keywords)
+  const materials = ["silver", "gold", "gemstone", "pearl", "copper", "wood", "glass", "brass"];
+  
+  // Filter products based on all filters and search query
+  const filteredProducts = allProducts.filter(product => {
+    // Category filter (if category is specified)
+    const passesCategory = !category || product.category === category.toLowerCase();
+    
     // Price filter
     const passesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
     
     // Materials filter (if any selected)
     const passesMaterials = selectedMaterials.length === 0 || 
-      selectedMaterials.some(m => product.description.toLowerCase().includes(m.toLowerCase()));
+      selectedMaterials.some(m => 
+        product.description.toLowerCase().includes(m.toLowerCase()) || 
+        product.name.toLowerCase().includes(m.toLowerCase())
+      );
     
-    return passesPrice && passesMaterials;
+    // Artisan filter (if any selected)
+    const passesArtisans = selectedArtisans.length === 0 || 
+      selectedArtisans.includes(product.artisan);
+    
+    // Rating filter (if any selected)
+    const passesRatings = selectedRatings.length === 0 || 
+      selectedRatings.some(r => product.rating >= r);
+    
+    // Search query filter
+    const matchesSearch = !searchQuery || 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.artisan.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return passesCategory && passesPrice && passesMaterials && passesArtisans && passesRatings && matchesSearch;
   });
-  
-  // Sample materials for filter
-  const materials = ["silver", "gold", "gemstone", "pearl", "copper", "wood"];
+
+  // Sort products based on selected sort option
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortOption) {
+      case "price-low-high":
+        return a.price - b.price;
+      case "price-high-low":
+        return b.price - a.price;
+      case "newest":
+        return a.isNew ? -1 : b.isNew ? 1 : 0;
+      case "rating":
+        return b.rating - a.rating;
+      case "featured":
+      default:
+        return b.isFeatured ? 1 : a.isFeatured ? -1 : 0;
+    }
+  });
   
   // Handle material filter change
   const handleMaterialChange = (material: string) => {
@@ -49,6 +95,32 @@ const CategoryProducts = () => {
         ? prev.filter(m => m !== material)
         : [...prev, material]
     );
+  };
+  
+  // Handle artisan filter change
+  const handleArtisanChange = (artisan: string) => {
+    setSelectedArtisans(prev =>
+      prev.includes(artisan)
+        ? prev.filter(a => a !== artisan)
+        : [...prev, artisan]
+    );
+  };
+  
+  // Handle rating filter change
+  const handleRatingChange = (rating: number) => {
+    setSelectedRatings(prev =>
+      prev.includes(rating)
+        ? prev.filter(r => r !== rating)
+        : [...prev, rating]
+    );
+  };
+  
+  // Handle clear filters
+  const handleClearFilters = () => {
+    setPriceRange([0, 10000]);
+    setSelectedMaterials([]);
+    setSelectedArtisans([]);
+    setSelectedRatings([]);
   };
   
   return (
@@ -60,17 +132,29 @@ const CategoryProducts = () => {
         <span className="text-foreground capitalize">
           {category || "All Products"}
         </span>
+        {searchQuery && (
+          <>
+            <span className="mx-2">/</span>
+            <span className="text-foreground">Search: "{searchQuery}"</span>
+          </>
+        )}
       </div>
       
       {/* Category Header */}
       <div className="text-center mb-12">
         <h1 className="text-3xl font-serif font-semibold mb-2 capitalize">
-          {category ? `${category}` : "All Products"}
+          {searchQuery 
+            ? `Search Results for "${searchQuery}"` 
+            : category 
+              ? `${category}` 
+              : "All Products"}
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          {category 
-            ? `Explore our collection of handcrafted ${category} made by talented artisans from around the world.`
-            : "Browse our complete collection of handcrafted jewelry and materials."
+          {searchQuery 
+            ? `Showing ${sortedProducts.length} results for "${searchQuery}"`
+            : category 
+              ? `Explore our collection of handcrafted ${category} made by talented artisans from around the world.`
+              : "Browse our complete collection of handcrafted jewelry and materials."
           }
         </p>
       </div>
@@ -82,16 +166,16 @@ const CategoryProducts = () => {
           <div>
             <h3 className="font-medium mb-4">Price Range</h3>
             <Slider 
-              defaultValue={[0, 100]} 
-              max={100} 
-              step={1}
+              defaultValue={[0, 10000]} 
+              max={10000} 
+              step={100}
               value={priceRange}
               onValueChange={setPriceRange}
               className="mb-6"
             />
             <div className="flex items-center justify-between text-sm">
-              <div>${priceRange[0]}</div>
-              <div>${priceRange[1]}{priceRange[1] === 100 && "+"}</div>
+              <div>₹{priceRange[0]}</div>
+              <div>₹{priceRange[1]}{priceRange[1] === 10000 && "+"}</div>
             </div>
           </div>
           
@@ -123,9 +207,13 @@ const CategoryProducts = () => {
           <div>
             <h3 className="font-medium mb-4">Artisan</h3>
             <div className="space-y-3">
-              {["Elena Crafts", "Ocean Treasures", "Silver Stories"].map(artisan => (
+              {artisans.map(artisan => (
                 <div key={artisan} className="flex items-center">
-                  <Checkbox id={`artisan-${artisan}`} />
+                  <Checkbox 
+                    id={`artisan-${artisan}`} 
+                    checked={selectedArtisans.includes(artisan)}
+                    onCheckedChange={() => handleArtisanChange(artisan)}
+                  />
                   <label
                     htmlFor={`artisan-${artisan}`}
                     className="ml-2 text-sm"
@@ -144,7 +232,11 @@ const CategoryProducts = () => {
             <div className="space-y-3">
               {[5, 4, 3, 2, 1].map(rating => (
                 <div key={rating} className="flex items-center">
-                  <Checkbox id={`rating-${rating}`} />
+                  <Checkbox 
+                    id={`rating-${rating}`}
+                    checked={selectedRatings.includes(rating)}
+                    onCheckedChange={() => handleRatingChange(rating)}
+                  />
                   <label
                     htmlFor={`rating-${rating}`}
                     className="ml-2 text-sm flex items-center"
@@ -175,7 +267,7 @@ const CategoryProducts = () => {
             </div>
           </div>
           
-          <Button className="w-full">Clear Filters</Button>
+          <Button className="w-full" onClick={handleClearFilters}>Clear Filters</Button>
         </div>
         
         {/* Products Section */}
@@ -194,16 +286,16 @@ const CategoryProducts = () => {
                   <div>
                     <h3 className="font-medium mb-4">Price Range</h3>
                     <Slider 
-                      defaultValue={[0, 100]} 
-                      max={100} 
-                      step={1}
+                      defaultValue={[0, 10000]} 
+                      max={10000} 
+                      step={100}
                       value={priceRange}
                       onValueChange={setPriceRange}
                       className="mb-6"
                     />
                     <div className="flex items-center justify-between text-sm">
-                      <div>${priceRange[0]}</div>
-                      <div>${priceRange[1]}{priceRange[1] === 100 && "+"}</div>
+                      <div>₹{priceRange[0]}</div>
+                      <div>₹{priceRange[1]}{priceRange[1] === 10000 && "+"}</div>
                     </div>
                   </div>
                   
@@ -232,7 +324,30 @@ const CategoryProducts = () => {
                   
                   <Separator />
                   
-                  <Button className="w-full">Apply Filters</Button>
+                  <div>
+                    <h3 className="font-medium mb-4">Artisan</h3>
+                    <div className="space-y-3">
+                      {artisans.slice(0, 5).map(artisan => (
+                        <div key={artisan} className="flex items-center">
+                          <Checkbox 
+                            id={`mobile-artisan-${artisan}`}
+                            checked={selectedArtisans.includes(artisan)}
+                            onCheckedChange={() => handleArtisanChange(artisan)}
+                          />
+                          <label
+                            htmlFor={`mobile-artisan-${artisan}`}
+                            className="ml-2 text-sm"
+                          >
+                            {artisan}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <Button className="w-full" onClick={handleClearFilters}>Apply Filters</Button>
                 </div>
               </SheetContent>
             </Sheet>
@@ -241,10 +356,13 @@ const CategoryProducts = () => {
           {/* Sorting and View Options */}
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
             <div className="text-sm text-muted-foreground mb-4 sm:mb-0">
-              Showing {filteredProducts.length} products
+              Showing {sortedProducts.length} products
             </div>
             <div className="flex items-center gap-4">
-              <Select defaultValue="featured">
+              <Select 
+                value={sortOption}
+                onValueChange={(value) => setSortOption(value)}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -281,54 +399,66 @@ const CategoryProducts = () => {
           </div>
           
           {/* Product Grid */}
-          {viewMode === "grid" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+          {sortedProducts.length > 0 ? (
+            viewMode === "grid" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sortedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {sortedProducts.map((product) => (
+                  <ListProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )
           ) : (
-            <div className="space-y-6">
-              {filteredProducts.map((product) => (
-                <ListProductCard key={product.id} product={product} />
-              ))}
+            <div className="text-center py-12">
+              <h3 className="text-xl font-medium mb-2">No Products Found</h3>
+              <p className="text-muted-foreground mb-4">
+                Try adjusting your filters or search terms.
+              </p>
+              <Button onClick={handleClearFilters}>Clear All Filters</Button>
             </div>
           )}
           
-          {/* Pagination */}
-          <div className="flex justify-center mt-12">
-            <nav>
-              <ul className="flex">
-                <li>
-                  <Button variant="outline" size="icon" className="rounded-r-none">
-                    <ChevronDown className="h-4 w-4 rotate-90" />
-                    <span className="sr-only">Previous</span>
-                  </Button>
-                </li>
-                <li>
-                  <Button variant="outline" size="sm" className="rounded-none bg-primary text-white hover:bg-primary/90 hover:text-white">
-                    1
-                  </Button>
-                </li>
-                <li>
-                  <Button variant="outline" size="sm" className="rounded-none">
-                    2
-                  </Button>
-                </li>
-                <li>
-                  <Button variant="outline" size="sm" className="rounded-none">
-                    3
-                  </Button>
-                </li>
-                <li>
-                  <Button variant="outline" size="icon" className="rounded-l-none">
-                    <ChevronDown className="h-4 w-4 -rotate-90" />
-                    <span className="sr-only">Next</span>
-                  </Button>
-                </li>
-              </ul>
-            </nav>
-          </div>
+          {/* Pagination - only show if we have more than a few products */}
+          {sortedProducts.length > 9 && (
+            <div className="flex justify-center mt-12">
+              <nav>
+                <ul className="flex">
+                  <li>
+                    <Button variant="outline" size="icon" className="rounded-r-none">
+                      <ChevronDown className="h-4 w-4 rotate-90" />
+                      <span className="sr-only">Previous</span>
+                    </Button>
+                  </li>
+                  <li>
+                    <Button variant="outline" size="sm" className="rounded-none bg-primary text-white hover:bg-primary/90 hover:text-white">
+                      1
+                    </Button>
+                  </li>
+                  <li>
+                    <Button variant="outline" size="sm" className="rounded-none">
+                      2
+                    </Button>
+                  </li>
+                  <li>
+                    <Button variant="outline" size="sm" className="rounded-none">
+                      3
+                    </Button>
+                  </li>
+                  <li>
+                    <Button variant="outline" size="icon" className="rounded-l-none">
+                      <ChevronDown className="h-4 w-4 -rotate-90" />
+                      <span className="sr-only">Next</span>
+                    </Button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          )}
         </div>
       </div>
     </main>
@@ -337,14 +467,24 @@ const CategoryProducts = () => {
 
 // List View Product Card Component
 const ListProductCard = ({ product }: { product: Product }) => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product, 1);
+  };
+
   return (
     <div className="flex flex-col sm:flex-row overflow-hidden rounded-lg bg-white card-shadow">
       <div className="relative sm:w-1/3">
-        <img 
-          src={product.imageUrl} 
-          alt={product.name}
-          className="h-full w-full object-cover aspect-square sm:aspect-auto"
-        />
+        <Link to={`/product/${product.id}`}>
+          <img 
+            src={product.imageUrl} 
+            alt={product.name}
+            className="h-full w-full object-cover aspect-square sm:aspect-auto"
+          />
+        </Link>
         {/* Tags */}
         <div className="absolute bottom-2 left-2 flex gap-2">
           {product.isNew && (
@@ -398,12 +538,16 @@ const ListProductCard = ({ product }: { product: Product }) => {
         <p className="text-muted-foreground text-sm line-clamp-2 mb-4">{product.description}</p>
         
         <div className="mt-auto flex items-center justify-between">
-          <div className="font-semibold text-lg">${product.price.toFixed(2)}</div>
+          <div className="font-semibold text-lg flex items-center">
+            <IndianRupee className="h-4 w-4 mr-1" />
+            {product.price.toLocaleString('en-IN')}
+          </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              Quick View
+            <Button variant="outline" size="sm" asChild>
+              <Link to={`/product/${product.id}`}>View Details</Link>
             </Button>
-            <Button size="sm">
+            <Button size="sm" onClick={handleAddToCart}>
+              <ShoppingBag className="mr-2 h-4 w-4" />
               Add to Cart
             </Button>
           </div>
@@ -412,5 +556,9 @@ const ListProductCard = ({ product }: { product: Product }) => {
     </div>
   );
 };
+
+// Add necessary imports at the top
+import { useCart } from "@/contexts/CartContext";
+import { IndianRupee, ShoppingBag } from "lucide-react";
 
 export default CategoryProducts;

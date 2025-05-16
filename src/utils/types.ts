@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -126,6 +125,150 @@ export const MOCK_PRODUCTS: Product[] = [
     rating: 4.7,
     isFeatured: false,
     isNew: true
+  },
+  {
+    id: "7",
+    name: "Traditional Kundan Necklace",
+    price: 8999,
+    description: "Exquisite kundan work necklace with meenakari detailing and pearl accents.",
+    imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80",
+    category: "necklaces",
+    artisan: "Aanya Handicrafts",
+    rating: 5.0,
+    isFeatured: true,
+    isNew: true
+  },
+  {
+    id: "8",
+    name: "Gemstone Stud Earrings",
+    price: 1899,
+    description: "Delicate stud earrings with semi-precious gemstones in gold-plated settings.",
+    imageUrl: "https://images.unsplash.com/photo-1589128777073-263566ae5e4d?auto=format&fit=crop&w=800&q=80",
+    category: "earrings",
+    artisan: "Samudra Jewels",
+    rating: 4.6,
+    isFeatured: false,
+    isNew: true
+  },
+  {
+    id: "9",
+    name: "Oxidized Silver Bangles (Set of 3)",
+    price: 2499,
+    description: "Traditional oxidized silver bangles with tribal motifs and intricate detailing.",
+    imageUrl: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80",
+    category: "bracelets",
+    artisan: "Chandi Crafts",
+    rating: 4.8,
+    isFeatured: false,
+    isNew: false
+  },
+  {
+    id: "10",
+    name: "Wooden Bead Statement Necklace",
+    price: 2199,
+    description: "Handcrafted wooden bead necklace with natural dyes and cotton thread work.",
+    imageUrl: "https://images.unsplash.com/photo-1576022162028-8997941e2284?auto=format&fit=crop&w=800&q=80",
+    category: "necklaces",
+    artisan: "Vastra Designs",
+    rating: 4.5,
+    isFeatured: true,
+    isNew: false
+  },
+  {
+    id: "11",
+    name: "Silver Toe Ring (Pair)",
+    price: 899,
+    description: "Delicate silver toe rings with traditional design, adjustable size.",
+    imageUrl: "https://images.unsplash.com/photo-1604159734475-71911ae8bb2f?auto=format&fit=crop&w=800&q=80",
+    category: "rings",
+    artisan: "Chandi Crafts",
+    rating: 4.3,
+    isFeatured: false,
+    isNew: false
+  },
+  {
+    id: "12",
+    name: "Brass Temple Jewelry Set",
+    price: 3699,
+    description: "Traditional temple-style jewelry set with necklace and earrings in antique brass finish.",
+    imageUrl: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=800&q=80",
+    category: "necklaces",
+    artisan: "Tamba Creations",
+    rating: 4.9,
+    isFeatured: true,
+    isNew: false
+  },
+  {
+    id: "13",
+    name: "Seed Bead Layered Bracelet",
+    price: 1299,
+    description: "Colorful seed bead bracelet with multiple layers and adjustable clasp.",
+    imageUrl: "https://images.unsplash.com/photo-1611085583191-a3b181a88577?auto=format&fit=crop&w=800&q=80",
+    category: "bracelets",
+    artisan: "Moti Designs",
+    rating: 4.4,
+    isFeatured: false,
+    isNew: true
+  },
+  {
+    id: "14",
+    name: "Silver Filigree Pendant",
+    price: 2999,
+    description: "Intricate silver filigree pendant with traditional Odisha craftsmanship.",
+    imageUrl: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80",
+    category: "pendants",
+    artisan: "Chandi Crafts",
+    rating: 4.8,
+    isFeatured: true,
+    isNew: false
+  },
+  {
+    id: "15",
+    name: "Handcrafted Copper Bracelet",
+    price: 1599,
+    description: "Therapeutic copper bracelet with hand-hammered texture and magnetic elements.",
+    imageUrl: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=800&q=80",
+    category: "bracelets",
+    artisan: "Tamba Creations",
+    rating: 4.7,
+    isFeatured: false,
+    isNew: false
+  },
+  {
+    id: "16",
+    name: "Glass Bead Making Kit",
+    price: 1999,
+    description: "DIY kit for creating your own glass beads with traditional techniques.",
+    imageUrl: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=800&q=80",
+    category: "materials",
+    artisan: "Moti Designs",
+    rating: 4.6,
+    isFeatured: false,
+    isNew: true
+  },
+  {
+    id: "17",
+    name: "Silver Wire 24 Gauge (10m)",
+    price: 699,
+    description: "High-quality silver wire for jewelry making, perfect for wire-wrapping techniques.",
+    imageUrl: "https://images.unsplash.com/photo-1601821326018-d949a54b6d6f?auto=format&fit=crop&w=800&q=80",
+    category: "materials",
+    artisan: "Chandi Crafts",
+    rating: 4.9,
+    isFeatured: false,
+    isNew: false
+  },
+  {
+    id: "18",
+    name: "Semi-precious Gemstone Collection",
+    price: 2499,
+    description: "Assorted semi-precious gemstones for jewelry making, includes 15 varieties.",
+    imageUrl: "https://images.unsplash.com/photo-1589118949245-7d38baf380d6?auto=format&fit=crop&w=800&q=80",
+    category: "materials",
+    artisan: "Samudra Jewels",
+    rating: 4.8,
+    isFeatured: true,
+    isNew: false
   }
 ];
 
@@ -285,4 +428,3 @@ export const MOCK_ARTISANS = [
     ]
   }
 ];
-

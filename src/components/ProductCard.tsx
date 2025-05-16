@@ -97,8 +97,15 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
           </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <Button variant="outline" size="sm" className="w-full" onClick={handleQuickView}>
-            Quick View
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full" 
+            asChild
+          >
+            <Link to={`/product/${product.id}`}>
+              Quick View
+            </Link>
           </Button>
           <Button size="sm" className="w-full" onClick={handleAddToCart}>
             <ShoppingBag className="mr-2 h-4 w-4" />

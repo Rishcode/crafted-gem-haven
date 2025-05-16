@@ -1,18 +1,30 @@
-
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SearchBar = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialQuery = searchParams.get('q') || "";
+  
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      // If already on products page, just update the query parameter
+      if (location.pathname === "/all-products" || location.pathname.startsWith("/category/")) {
+        const currentParams = new URLSearchParams(location.search);
+        currentParams.set('q', searchQuery.trim());
+        navigate(`${location.pathname}?${currentParams.toString()}`);
+      } else {
+        // Otherwise navigate to the all products page with the search query
+        navigate(`/all-products?q=${encodeURIComponent(searchQuery.trim())}`);
+      }
     }
   };
 
