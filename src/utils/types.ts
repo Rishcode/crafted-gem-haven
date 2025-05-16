@@ -36,9 +36,13 @@ export interface Seller {
   ifsc_code?: string;
   account_holder_name?: string;
   verified: boolean;
-  verification_status: string; // Changed from string literal union to string
+  verification_status: string;
   created_at: string;
   updated_at: string;
+  specialization?: string;
+  years_of_experience?: number;
+  awards?: string[];
+  gallery?: string[];
 }
 
 export interface SellerDocument {
@@ -54,11 +58,11 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "1",
     name: "Handcrafted Gemstone Necklace",
-    price: 79.99,
+    price: 3999,
     description: "Beautiful handcrafted necklace with natural gemstones set in sterling silver.",
     imageUrl: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=800&q=80",
     category: "necklaces",
-    artisan: "Elena Crafts",
+    artisan: "Aanya Handicrafts",
     rating: 4.8,
     isFeatured: true,
     isNew: false
@@ -66,11 +70,11 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "2",
     name: "Pearl Earrings",
-    price: 45.00,
+    price: 2250,
     description: "Delicate freshwater pearl earrings with 14k gold fixtures.",
     imageUrl: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80",
     category: "earrings",
-    artisan: "Ocean Treasures",
+    artisan: "Samudra Jewels",
     rating: 4.9,
     isFeatured: true,
     isNew: false
@@ -78,11 +82,11 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "3",
     name: "Handwoven Macramé Bracelet",
-    price: 29.99,
+    price: 1499,
     description: "Intricate macramé bracelet woven with cotton rope and wooden beads.",
     imageUrl: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=800&q=80",
     category: "bracelets",
-    artisan: "Natural Knots",
+    artisan: "Vastra Designs",
     rating: 4.7,
     isFeatured: true,
     isNew: true
@@ -90,11 +94,11 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "4",
     name: "Silver Statement Ring",
-    price: 89.00,
+    price: 4450,
     description: "Handcrafted statement ring made from recycled silver with a unique abstract design.",
     imageUrl: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=800&q=80",
     category: "rings",
-    artisan: "Silver Stories",
+    artisan: "Chandi Crafts",
     rating: 4.9,
     isFeatured: true,
     isNew: false
@@ -102,11 +106,11 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "5",
     name: "Copper Wire Wrapped Pendant",
-    price: 35.99,
+    price: 1799,
     description: "Hand-wrapped copper wire pendant with a polished stone center.",
     imageUrl: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80",
     category: "pendants",
-    artisan: "Copper Creations",
+    artisan: "Tamba Creations",
     rating: 4.6,
     isFeatured: false,
     isNew: true
@@ -114,11 +118,11 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "6",
     name: "Beaded Anklet",
-    price: 19.99,
+    price: 999,
     description: "Colorful handmade anklet with glass beads and silver charms.",
     imageUrl: "https://images.unsplash.com/photo-1583292650898-7d22cd27ca6f?auto=format&fit=crop&w=800&q=80",
     category: "anklets",
-    artisan: "Beach Beads",
+    artisan: "Moti Designs",
     rating: 4.7,
     isFeatured: false,
     isNew: true
@@ -157,3 +161,128 @@ export const CATEGORIES: Category[] = [
     description: "Quality materials for your own jewelry creations"
   }
 ];
+
+// Mock artisans with detailed profiles
+export const MOCK_ARTISANS = [
+  {
+    id: "a1",
+    user_id: "u123",
+    store_name: "Aanya Handicrafts",
+    bio: "Third-generation artisan specializing in traditional gemstone jewelry with modern designs. Our family workshop has been creating unique pieces since 1952, bringing together ancient techniques with contemporary aesthetics.",
+    phone_number: "+91 98765 43210",
+    address: "42, Crafters Lane, Johari Bazaar",
+    city: "Jaipur",
+    state: "Rajasthan",
+    pin_code: "302001",
+    country: "India",
+    verified: true,
+    verification_status: "verified",
+    created_at: "2024-02-15",
+    updated_at: "2024-04-20",
+    specialization: "Gemstone Setting and Filigree Work",
+    years_of_experience: 25,
+    awards: ["National Handicraft Award 2022", "State Master Craftsperson 2020"],
+    gallery: [
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1617038260897-43f82a3d9994?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80"
+    ]
+  },
+  {
+    id: "a2",
+    user_id: "u234",
+    store_name: "Samudra Jewels",
+    bio: "Inspired by the ocean, Samudra Jewels creates delicate pearl and seashell jewelry using sustainably sourced materials. Each piece is designed to capture the essence of coastal beauty.",
+    phone_number: "+91 87654 32109",
+    address: "8, Beach Road, Silver Beach",
+    city: "Mumbai",
+    state: "Maharashtra",
+    pin_code: "400001",
+    country: "India",
+    verified: true,
+    verification_status: "verified",
+    created_at: "2023-11-05",
+    updated_at: "2024-03-15",
+    specialization: "Pearl Setting and Ocean-inspired Designs",
+    years_of_experience: 12,
+    awards: ["Best Emerging Designer 2023"],
+    gallery: [
+      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1599643477877-530eb83a5089?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1611107683227-e9060eccd846?auto=format&fit=crop&w=800&q=80"
+    ]
+  },
+  {
+    id: "a3",
+    user_id: "u345",
+    store_name: "Vastra Designs",
+    bio: "Vastra Designs blends traditional textile techniques with modern aesthetics to create unique wearable art. Our workshop employs local artisans, preserving age-old weaving and macramé skills.",
+    phone_number: "+91 76543 21098",
+    address: "15, Weavers Colony, Textile Market",
+    city: "Ahmedabad",
+    state: "Gujarat",
+    pin_code: "380001",
+    country: "India",
+    verified: true,
+    verification_status: "verified",
+    created_at: "2023-08-18",
+    updated_at: "2024-04-02",
+    specialization: "Macramé and Natural Fiber Weaving",
+    years_of_experience: 15,
+    awards: ["Textile Excellence Award 2021", "Sustainable Craft Recognition 2023"],
+    gallery: [
+      "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1620286796651-38c7136b1df0?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1605999081236-47dbdb1a1264?auto=format&fit=crop&w=800&q=80"
+    ]
+  },
+  {
+    id: "a4",
+    user_id: "u456",
+    store_name: "Chandi Crafts",
+    bio: "Specializing in silver filigree work, a traditional craft from Cuttack, Odisha. Our artisans create intricate designs that blend centuries-old techniques with contemporary style, using recycled silver.",
+    phone_number: "+91 65432 10987",
+    address: "27, Silver Street, Filigree Market",
+    city: "Cuttack",
+    state: "Odisha",
+    pin_code: "753001",
+    country: "India",
+    verified: true,
+    verification_status: "verified",
+    created_at: "2022-05-10",
+    updated_at: "2024-02-28",
+    specialization: "Silver Filigree and Tribal Jewelry",
+    years_of_experience: 30,
+    awards: ["Master Craftsman Award 2019", "GI Tag Recognition 2018"],
+    gallery: [
+      "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1618403088890-3d9ff6f4c8b1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1601821326018-d949a54b6d6f?auto=format&fit=crop&w=800&q=80"
+    ]
+  },
+  {
+    id: "a5",
+    user_id: "u567",
+    store_name: "Tamba Creations",
+    bio: "Specializing in copper and brass work, we create handcrafted items using ancient techniques passed down through generations. Our workshop focuses on eco-friendly practices and supporting local artisans.",
+    phone_number: "+91 54321 09876",
+    address: "12, Metal Workers Colony, Copper Market",
+    city: "Moradabad",
+    state: "Uttar Pradesh",
+    pin_code: "244001",
+    country: "India",
+    verified: true,
+    verification_status: "verified",
+    created_at: "2023-02-20",
+    updated_at: "2024-01-15",
+    specialization: "Copper Wire Wrapping and Stone Setting",
+    years_of_experience: 18,
+    awards: ["Metal Artistry Award 2022"],
+    gallery: [
+      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1631965004544-1762fc696476?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80"
+    ]
+  }
+];
+

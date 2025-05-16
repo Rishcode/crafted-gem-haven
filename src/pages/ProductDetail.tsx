@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Heart, Share, ShoppingBag } from "lucide-react";
+import { Heart, Share, ShoppingBag, IndianRupee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -100,7 +100,7 @@ const ProductDetail = () => {
         {/* Product Info */}
         <div>
           <div className="mb-1 text-sm text-muted-foreground">
-            By <Link to={`/artisan/${product.artisan}`} className="hover:text-primary">{product.artisan}</Link>
+            By <Link to={`/seller/${product.artisan}`} className="hover:text-primary">{product.artisan}</Link>
           </div>
           <h1 className="text-3xl font-serif font-semibold mb-2">{product.name}</h1>
           
@@ -135,7 +135,10 @@ const ProductDetail = () => {
           </div>
           
           {/* Price */}
-          <div className="text-2xl font-semibold mb-4">${product.price.toFixed(2)}</div>
+          <div className="text-2xl font-semibold mb-4 flex items-center">
+            <IndianRupee className="h-5 w-5 mr-1" />
+            {product.price.toLocaleString('en-IN')}
+          </div>
           
           {/* Short Description */}
           <p className="text-muted-foreground mb-6">{product.description}</p>
@@ -200,7 +203,7 @@ const ProductDetail = () => {
             </div>
             <div className="flex gap-2">
               <span className="font-medium">Artisan:</span>
-              <Link to={`/artisan/${product.artisan}`} className="text-primary hover:underline">
+              <Link to={`/seller/${product.artisan}`} className="text-primary hover:underline">
                 {product.artisan}
               </Link>
             </div>

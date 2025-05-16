@@ -6,8 +6,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Seller } from "@/utils/types";
-import { Store, MapPin } from "lucide-react";
+import { Seller, MOCK_ARTISANS } from "@/utils/types";
+import { Store, MapPin, User } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 const SellerCard = ({ seller }: { seller: Seller }) => {
@@ -43,6 +43,11 @@ const SellerCard = ({ seller }: { seller: Seller }) => {
         <p className="text-muted-foreground line-clamp-2">
           {seller.bio || "Artisan specializing in handcrafted jewelry and artifacts."}
         </p>
+        {seller.specialization && (
+          <div className="mt-2 text-sm">
+            <span className="font-medium">Specialization:</span> {seller.specialization}
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between border-t pt-4 pb-2">
         <Button variant="outline" size="sm" asChild>
@@ -73,13 +78,19 @@ const Sellers = () => {
 
         if (error) throw error;
         
-        setSellers(data as unknown as Seller[]);
+        // If we get data from Supabase, use it; otherwise, use mock data
+        if (data && data.length > 0) {
+          setSellers(data as unknown as Seller[]);
+        } else {
+          // Use our mock artisans instead
+          setSellers(MOCK_ARTISANS);
+        }
       } catch (error: any) {
         console.error("Error fetching sellers:", error);
+        // Use mock artisans on error
+        setSellers(MOCK_ARTISANS);
         toast({
-          variant: "destructive",
-          title: "Failed to load sellers",
-          description: error.message,
+          description: "Using demo data while we connect to the server",
         });
       } finally {
         setIsLoading(false);

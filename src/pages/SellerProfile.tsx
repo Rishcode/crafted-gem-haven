@@ -2,16 +2,16 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Seller, Product } from "@/utils/types";
+import { Seller, Product, MOCK_PRODUCTS, MOCK_ARTISANS } from "@/utils/types";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Store, MapPin, Phone, Mail, Star } from "lucide-react";
+import { Store, MapPin, Phone, Mail, Star, User, IndianRupee, Images } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import CustomOrderForm from "@/components/CustomOrderForm";
-import { MOCK_PRODUCTS } from "@/utils/types";
+import { Card, CardContent } from "@/components/ui/card";
 
 const SellerProfile = () => {
   const { sellerId } = useParams();
@@ -37,7 +37,6 @@ const SellerProfile = () => {
           setSeller(data as unknown as Seller);
           
           // For now, just filtering the mock products by seller
-          // In a real app, we would fetch the seller's products from the database
           setProducts(
             MOCK_PRODUCTS.filter(p => p.artisan === data.store_name).length > 0
               ? MOCK_PRODUCTS.filter(p => p.artisan === data.store_name)
@@ -46,11 +45,23 @@ const SellerProfile = () => {
         }
       } catch (error: any) {
         console.error("Error fetching seller profile:", error);
-        toast({
-          variant: "destructive",
-          title: "Failed to load seller profile",
-          description: error.message,
-        });
+        
+        // If we fail to get data from Supabase, use our mock data
+        const mockSeller = MOCK_ARTISANS.find(a => a.id === sellerId);
+        if (mockSeller) {
+          setSeller(mockSeller);
+          setProducts(
+            MOCK_PRODUCTS.filter(p => p.artisan === mockSeller.store_name).length > 0
+              ? MOCK_PRODUCTS.filter(p => p.artisan === mockSeller.store_name)
+              : MOCK_PRODUCTS.slice(0, 4)
+          );
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Failed to load seller profile",
+            description: error.message,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -132,6 +143,13 @@ const SellerProfile = () => {
               <Star className="h-4 w-4 mr-1 text-yellow-400" />
               <span>4.8 (24 reviews)</span>
             </div>
+            
+            {seller.years_of_experience && (
+              <div className="flex items-center text-sm text-muted-foreground">
+                <User className="h-4 w-4 mr-1" />
+                <span>{seller.years_of_experience} years of experience</span>
+              </div>
+            )}
           </div>
           
           <p className="mt-4 text-muted-foreground">
@@ -148,8 +166,9 @@ const SellerProfile = () => {
       <Separator className="my-8" />
       
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid grid-cols-3 max-w-md mx-auto mb-8">
+        <TabsList className="grid grid-cols-4 max-w-md mx-auto mb-8">
           <TabsTrigger value="products">Products</TabsTrigger>
+          <TabsTrigger value="gallery">Gallery</TabsTrigger>
           <TabsTrigger value="custom">Custom Order</TabsTrigger>
           <TabsTrigger value="about">About</TabsTrigger>
         </TabsList>
@@ -169,6 +188,39 @@ const SellerProfile = () => {
               </p>
             </div>
           )}
+        </TabsContent>
+        
+        <TabsContent value="gallery">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8">
+              <h2 className="text-2xl font-serif font-semibold mb-3">Artisan Gallery</h2>
+              <p className="text-muted-foreground mb-6">
+                Browse through our workshop and see our craftsmanship in action.
+              </p>
+              
+              {seller.gallery && seller.gallery.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {seller.gallery.map((image, index) => (
+                    <div key={index} className="aspect-square rounded-md overflow-hidden">
+                      <img
+                        src={image}
+                        alt={`Workshop image ${index + 1}`}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 border rounded-md bg-secondary/10">
+                  <Images className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-medium mb-2">No Gallery Images</h3>
+                  <p className="text-muted-foreground">
+                    The artisan hasn't added any workshop images yet.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </TabsContent>
         
         <TabsContent value="custom">
@@ -192,6 +244,24 @@ const SellerProfile = () => {
                 {seller.bio || `${seller.store_name} is an artisan store specializing in handcrafted jewelry and artifacts. Each piece is carefully crafted with attention to detail and quality.`}
               </p>
             </div>
+            
+            {seller.specialization && (
+              <div>
+                <h3 className="text-xl font-medium mb-3">Specialization</h3>
+                <p className="text-muted-foreground">{seller.specialization}</p>
+              </div>
+            )}
+            
+            {seller.awards && seller.awards.length > 0 && (
+              <div>
+                <h3 className="text-xl font-medium mb-3">Awards & Recognition</h3>
+                <ul className="list-disc list-inside text-muted-foreground">
+                  {seller.awards.map((award, index) => (
+                    <li key={index}>{award}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             
             <div>
               <h3 className="text-xl font-medium mb-3">Contact Information</h3>

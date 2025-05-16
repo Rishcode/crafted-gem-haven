@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag, IndianRupee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/utils/types";
@@ -63,7 +63,10 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
           <h3 className="font-medium line-clamp-1 hover:underline underline-offset-2">{product.name}</h3>
         </Link>
         <div className="mt-2 flex items-center justify-between">
-          <div className="font-semibold">${product.price.toFixed(2)}</div>
+          <div className="font-semibold flex items-center">
+            <IndianRupee className="h-3 w-3 mr-1" />
+            {product.price.toLocaleString('en-IN')}
+          </div>
           <div className="flex items-center">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
