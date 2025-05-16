@@ -15,6 +15,8 @@ import { Slider } from "@/components/ui/slider";
 import { MOCK_PRODUCTS, Product } from "@/utils/types";
 import ProductCard from "@/components/ProductCard";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import CategorySelector from "@/components/CategorySelector";
+import SearchBar from "@/components/SearchBar";
 
 const CategoryProducts = () => {
   const { category } = useParams();
@@ -141,7 +143,7 @@ const CategoryProducts = () => {
       </div>
       
       {/* Category Header */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <h1 className="text-3xl font-serif font-semibold mb-2 capitalize">
           {searchQuery 
             ? `Search Results for "${searchQuery}"` 
@@ -157,6 +159,14 @@ const CategoryProducts = () => {
               : "Browse our complete collection of handcrafted jewelry and materials."
           }
         </p>
+      </div>
+
+      {/* Search and Category Selector */}
+      <div className="mb-8 grid gap-4">
+        <div className="w-full max-w-md mx-auto">
+          <SearchBar />
+        </div>
+        <CategorySelector />
       </div>
       
       {/* Filters and Products */}
