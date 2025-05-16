@@ -17,6 +17,7 @@ import SellerDashboard from "./pages/SellerDashboard";
 import Sellers from "./pages/Sellers";
 import SellerProfile from "./pages/SellerProfile";
 import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 
 const queryClient = new QueryClient();
 
@@ -24,26 +25,28 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/category/:category" element={<CategoryProducts />} />
-            <Route path="/all-products" element={<CategoryProducts />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/seller/register" element={<SellerRegistration />} />
-            <Route path="/seller/verification/:sellerId" element={<SellerVerification />} />
-            <Route path="/seller/dashboard" element={<SellerDashboard />} />
-            <Route path="/sellers" element={<Sellers />} />
-            <Route path="/seller/:sellerId" element={<SellerProfile />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Footer />
-        </BrowserRouter>
+        <CartProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/category/:category" element={<CategoryProducts />} />
+              <Route path="/all-products" element={<CategoryProducts />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/seller/register" element={<SellerRegistration />} />
+              <Route path="/seller/verification/:sellerId" element={<SellerVerification />} />
+              <Route path="/seller/dashboard" element={<SellerDashboard />} />
+              <Route path="/sellers" element={<Sellers />} />
+              <Route path="/seller/:sellerId" element={<SellerProfile />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Footer />
+          </BrowserRouter>
+        </CartProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

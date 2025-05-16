@@ -1,10 +1,11 @@
 
 import { Link } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/utils/types";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/contexts/CartContext";
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +13,20 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, className }: ProductCardProps) => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product, 1);
+  };
+
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Quick view functionality could be added here
+  };
+
   return (
     <div className={cn("group relative overflow-hidden rounded-lg bg-white card-shadow", className)}>
       <div className="relative aspect-square overflow-hidden">
@@ -79,10 +94,11 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
           </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <Button variant="outline" size="sm" className="w-full">
+          <Button variant="outline" size="sm" className="w-full" onClick={handleQuickView}>
             Quick View
           </Button>
-          <Button size="sm" className="w-full">
+          <Button size="sm" className="w-full" onClick={handleAddToCart}>
+            <ShoppingBag className="mr-2 h-4 w-4" />
             Add to Cart
           </Button>
         </div>

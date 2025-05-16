@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Heart, Share, ShoppingBag } from "lucide-react";
@@ -7,11 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { MOCK_PRODUCTS } from "@/utils/types";
 import ProductCard from "@/components/ProductCard";
-import { useToast } from "@/components/ui/use-toast";
+import { useCart } from "@/contexts/CartContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { toast } = useToast();
+  const { addToCart } = useCart();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   
@@ -47,17 +46,11 @@ const ProductDetail = () => {
   ).slice(0, 4);
 
   const handleAddToCart = () => {
-    toast({
-      title: "Added to cart",
-      description: `${quantity} × ${product.name} has been added to your cart.`,
-    });
+    addToCart(product, quantity);
   };
   
   const handleAddToFavorites = () => {
-    toast({
-      title: "Added to favorites",
-      description: `${product.name} has been added to your favorites.`,
-    });
+    // ... keep existing code
   };
 
   return (
