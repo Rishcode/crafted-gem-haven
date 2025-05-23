@@ -266,8 +266,8 @@ const AdminSellerVerification = () => {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                variant="destructive"
                                 onClick={() => handleVerification(seller.id, false)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
                                 Reject Seller
                               </AlertDialogAction>
