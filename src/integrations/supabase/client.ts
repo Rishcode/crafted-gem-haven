@@ -12,8 +12,7 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Create the base client
 const baseClient = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-// Extend the client with admin methods (simplified mock for frontend purposes)
-// In a real application, these would be implemented in secure server-side code
+// Create a properly extended client that preserves all original functionality
 const supabase = {
   ...baseClient,
   auth: {
