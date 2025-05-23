@@ -16,6 +16,7 @@ import SellerVerification from "./pages/SellerVerification";
 import SellerDashboard from "./pages/SellerDashboard";
 import Sellers from "./pages/Sellers";
 import SellerProfile from "./pages/SellerProfile";
+import AdminSellerVerification from "./pages/AdminSellerVerification";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
               <Route path="/sellers" element={<Sellers />} />
               <Route path="/seller/:sellerId" element={<SellerProfile />} />
+              <Route path="/admin/seller-verification" element={<AdminSellerVerification />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
