@@ -9,39 +9,4 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-// Create the base client
-const baseClient = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-
-// Create an extended client that preserves all original functionality
-const supabase = Object.assign(baseClient, {
-  auth: Object.assign(baseClient.auth, {
-    admin: {
-      // This is a simplified frontend mock - in a real app, this would be a server function
-      getUserById: async (userId: string) => {
-        // In a frontend app, we can't use the admin API directly
-        // This is just a mock for demonstration purposes
-        try {
-          // Get the user's email from another table or source
-          // For this demo, we'll just return a placeholder
-          // In a real app, you would handle this via a secure API or edge function
-          return {
-            data: {
-              user: {
-                id: userId,
-                email: `user-${userId.substring(0, 6)}@example.com`, // Fake email for demo
-              }
-            },
-            error: null
-          };
-        } catch (error) {
-          return {
-            data: null,
-            error
-          };
-        }
-      }
-    }
-  })
-});
-
-export { supabase };
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
